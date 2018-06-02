@@ -592,6 +592,14 @@ function olToUl(node) {
     return node;
 }
 
+// Strips Table of contents and subpage listing elements.
+function stripToc(node) {
+    Array.from(node.getElementsByClassName("goog-toc")).forEach(function (tocNode) {
+        tocNode.parentNode.removeChild(tocNode);
+    });
+    return node;
+}
+
 function RootNode (input) {
   var root;
   if (typeof input === 'string') {
@@ -608,6 +616,7 @@ function RootNode (input) {
   }
   root = fixSublists(root);
   root = olToUl(root);
+  root = stripToc(root);
   collapseWhitespace({
     element: root,
     isBlock: isBlock,
@@ -691,9 +700,9 @@ function TurndownService (options) {
 
   var defaults = {
     rules: rules,
-    headingStyle: 'setext',
+    headingStyle: 'atx',
     hr: '* * *',
-    bulletListMarker: '*',
+    bulletListMarker: '-',
     codeBlockStyle: 'indented',
     fence: '```',
     emDelimiter: '_',
