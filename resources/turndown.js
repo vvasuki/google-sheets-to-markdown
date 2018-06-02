@@ -108,7 +108,7 @@ rules.listItem = {
       .replace(/^\n+/, '') // remove leading newlines
       .replace(/\n+$/, '\n') // replace trailing newlines with just a single one
       .replace(/\n/gm, '\n    '); // indent
-    var prefix = options.bulletListMarker + '   ';
+    var prefix = options.bulletListMarker + ' ';
     var parent = node.parentNode;
     if (parent.nodeName === 'OL') {
       var start = parent.getAttribute('start');
@@ -566,10 +566,28 @@ function fixSublists(node) {
     var olElements = Array.from(node.getElementsByTagName("ol"));
     var listElements = ulElements.concat(olElements);
     listElements.forEach(function (listNode) {
-        if (listNode.previousElementSibling.tagName.toUpperCase() === "LI") {
+        if (listNode.previousElementSibling && listNode.previousElementSibling.tagName.toUpperCase() === "LI") {
           // The below moves, not copies. https://stackoverflow.com/questions/7555442/move-an-element-to-another-parent-after-changing-its-id
             listNode.previousElementSibling.appendChild(listNode);
         }
+    });
+    return node;
+}
+
+function olToUl(node) {
+    var olElements = Array.from(node.getElementsByTagName("ol"));
+    olElements.forEach(function (listNode) {
+        // The below is inspired by https://stackoverflow.com/questions/15086677/replace-specific-tag-name-javascript
+        var ulElement = document.createElement("ul");
+        // Copy the children
+        while (listNode.firstChild) {
+            ulElement.appendChild(listNode.firstChild); // *Moves* the child
+        }
+        // Copy the attributes
+        for (var index = listNode.attributes.length - 1; index >= 0; --index) {
+            ulElement.attributes.setNamedItem(listNode.attributes[index].cloneNode());
+        }
+        listNode.parentNode.replaceChild(ulElement, listNode);
     });
     return node;
 }
@@ -589,6 +607,7 @@ function RootNode (input) {
     root = input.cloneNode(true);
   }
   root = fixSublists(root);
+  root = olToUl(root);
   collapseWhitespace({
     element: root,
     isBlock: isBlock,
