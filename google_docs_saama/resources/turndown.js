@@ -72,7 +72,16 @@ rules.heading = {
         '\n\n' + content + '\n' + underline + '\n\n'
       )
     } else {
-      return '\n\n' + repeat('#', hLevel) + ' ' + content + '\n\n'
+      if(hLevel == 1) {
+          return '---\n' +
+              'title: ' + content + '  \n' +
+              'unicode_script: devanagari  \n' +
+              'emphasis_as_inline_comments: true\n' +
+              '---   ' +
+              '\n\n';
+      } else {
+          return '\n\n' + repeat('#', hLevel) + ' ' + content + '\n\n'
+      }
     }
   }
 };
@@ -742,10 +751,13 @@ TurndownService.prototype = {
     }
 
     if (input === '') return ''
+    input = input.replace(/[”]/, '"')
     if (this.options.svaraNotation == "old") {
         // Replace stuff like [प्रे] and ["](%) with the new svara notation.
         input = input.replace(/(\[.+?\]) *(\((.+?)\))?/g, '($1$3)');
+        // input = input.replace(/\\\*/g, '*');
     }
+    input = input.replace(/(\(.+?\))/g, '*$1*')
     var output = process.call(this, new RootNode(input));
     return postProcess.call(this, output)
   },
