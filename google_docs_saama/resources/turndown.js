@@ -858,6 +858,9 @@ TurndownService.prototype = {
         .replace(/`+(?![`\s\W]).+?`+/g, function (match) {
           return match.replace(/`/g, '\\`')
         })
+
+        // Fix |
+          .replace(/\|\|/g, '॥').replace(/\|/g, '।')
     )
   }
 };
