@@ -76,7 +76,7 @@ rules.heading = {
           return '---\n' +
               'title: ' + content + '  \n' +
               'unicode_script: devanagari  \n' +
-              'emphasis_as_inline_comments: true\n' +
+              '\n' +
               '---   ' +
               '\n\n';
       } else {
